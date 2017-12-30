@@ -2,9 +2,9 @@
 import os
 
 import time
+from pprint import pprint
 
 import numpy as np
-
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import KFold
 from sklearn.metrics import f1_score
@@ -13,6 +13,7 @@ from sklearn.base import clone
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import classification_report
 from sklearn.externals import joblib
+from sklearn.model_selection import GridSearchCV
 
 
 CUR_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -82,7 +83,37 @@ def train_test(train_data):
         print("f1:score", f1_score(y_test_folders, y_pred, average='binary'))
         print(classification_report(y_test_folders, y_pred))
 
-    
+def alchemist_train(train_data):
+    data = [i[0] for i in train_data]
+    label = [i[1] for i in train_data]
+    pipeline = Pipeline([
+        ('vect', CountVectorizer(analyzer='char')),
+        ('tfidf', TfidfTransformer()),
+        ('cls', MultinomialNB())
+    ])
+    nb_param_grid = {
+        'vect__max_df': (True, False),
+        'vect__max_df': (0.5, 0.75, 1.0),
+        'vect__ngram_range': ((1, 1), (1, 2), (1,3)),  # unigrams or bigrams
+        'tfidf__use_idf': (True, False),
+        'tfidf__norm': ('l1', 'l2'),
+        'cls__alpha': [i/10 for i in range(1, 11)]
+    }
+    grid_search = GridSearchCV(pipeline, nb_param_grid, cv=5, scoring="f1", n_jobs=4, verbose=1)
+    print("Performing grid search...")
+    print("pipeline:", [name for name, _ in pipeline.steps])
+    print("parameters:")
+    pprint(nb_param_grid)
+    t0 = time.time()
+    grid_search.fit(data, label)
+    print("done in %0.3fs" % (time() - t0))
+    print()
+
+    print("Best score: %0.3f" % grid_search.best_score_)
+    print("Best parameters set:")
+    best_parameters = grid_search.best_estimator_.get_params()
+    for param_name in sorted(parameters.keys()):
+        print("\t%s: %r" % (param_name, best_parameters[param_name]))
 
 def train(train_data, test_data):
     '''
@@ -134,15 +165,15 @@ class NBModel():
 
 def main():
     print('data reading ...')
-
     train_data = load_data(TRAIN_DATA)
-    test_data = load_data(TEST_DATA)
-    print('train_data_length:', len(train_data))
-    # def main():
-    #     pass
+    alchemist_train(train_data)
 
-    print('example 1:', train_data[0])
-    train(train_data, test_data)
+    # train_data = load_data(TRAIN_DATA)
+    # test_data = load_data(TEST_DATA)
+    # print('train_data_length:', len(train_data))
+    # print('example 1:', train_data[0])
+    # train(train_data, test_data)
+
 
 
 
