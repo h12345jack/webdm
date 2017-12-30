@@ -24,12 +24,11 @@ const styles = theme => ({
 class Results extends React.Component {
 
     render() {
-    const {result, classes, message} = this.props;
+    const { result, classes, message } = this.props;
     let status = result.is_spam == 0 ? 'exception' : 'success';
-    if(result.prob < 0.5){
+    if(result.prob < 0.7 && result.prob > 0.3){
         status = 'active'
     }
-    console.log(323232)
     return (
         <div style={{marginTop: 20, width: '100%'}}>
             <Card className={classes.card}>

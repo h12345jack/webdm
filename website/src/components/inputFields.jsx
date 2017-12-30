@@ -66,6 +66,11 @@ class TextFields extends React.Component {
           this.setState({
             submit_disable: false
           })
+        }).catch(err=>{
+          console.error(err);
+          this.setState({
+            submit_disable: false
+          })
         })
       }
     }

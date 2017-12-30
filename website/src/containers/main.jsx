@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 
+import Snackbar from 'material-ui/Snackbar';
+import Fade from 'material-ui/transitions/Fade';
 import { LinearProgress } from 'material-ui/Progress';
 
 import TextFields from '../components/inputFields';
@@ -45,8 +47,17 @@ class Main extends React.Component {
   state = {
     loading: false,
     result: {}, 
-    message: '',   
+    message: '',
+    error: false
   }
+  
+  handleErrorOpen = () => {
+    this.setState({ error: true });
+  };
+
+  handleErrorClose = () => {
+    this.setState({ error: false });
+  };
 
   messageSubmit = (item)=>{
     this.setState({
@@ -65,6 +76,13 @@ class Main extends React.Component {
           result: res.data,
         })
         resolve(res)
+      }).catch(err=>{
+        this.setState({
+          loading: false,
+          result: {},
+          error: true
+        });
+        reject(err);
       })
     })
   }
@@ -77,6 +95,17 @@ class Main extends React.Component {
             <h3>在线实例</h3>
             <TextFields messageSubmit={this.messageSubmit}/>
             { (result.is_spam || result.is_spam==0) && <Result result={result} message={message}/>}
+
+            <Snackbar
+              anchorOrigin = {{ vertical: 'top', horizontal: 'center' }}
+              open={this.state.error}
+              onClose={this.handleErrorClose}
+              transition={Fade}
+              SnackbarContentProps={{
+                'aria-describedby': 'message-id',
+              }}
+              message={<span id="message-id">生活难免错误，代码也是。</span>}
+            />
          </div>
 
     }
