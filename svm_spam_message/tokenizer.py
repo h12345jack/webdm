@@ -24,6 +24,12 @@ TRAINING_LABEL_PATH, TEST_FEATURE_MATRIX_PATH, TEST_LABEL_PATH)
 
 
 class TfidfVectorizer(TfidfVectorizer):
+    """
+    tranform each raw message to tf-idf vector
+
+    INPUT: message list
+    OUTPUT: tf-idf feature matrix
+    """
     def build_analyzer(self):
         def analyzer(doc):
             words = pseg.cut(doc)
@@ -34,6 +40,12 @@ class TfidfVectorizer(TfidfVectorizer):
         return analyzer
 
 def read_data(path=TRAINING_DATA_PATH):
+    """
+    read data from given path and  split labels and messages.
+   
+    INPUT: data path
+    OUTPUT: raw message list and corresponding labels
+    """
     with open(path) as f:
         data = f.read().split('\n')[:-1] # remove last line
     
@@ -42,6 +54,13 @@ def read_data(path=TRAINING_DATA_PATH):
     return message_data, labels
 
 def transform_feature_space():
+    """
+    transform all training data and test data to tf-idf feature matrix
+
+    INPUT: None
+    OUTPUT: training feature matrix, training labels
+            test feature matrix, test labels
+    """
     training_message_data, training_labels = read_data(TRAINING_DATA_PATH)
     test_message_data, test_labels = read_data(TEST_DATA_PATH)
     
@@ -62,6 +81,14 @@ def transform_feature_space():
 
 
 def get_feature_space():
+    """
+    load feature space from cached/ever transformed data
+    
+
+    INPUT: None
+    OUTPUT: training feature matrix, training labels
+            test feature matrix, test labels
+    """
     training_feature_matrix = joblib.load(TRAINING_FEATURE_MATRIX_PATH)
     training_labels = joblib.load(TRAINING_LABEL_PATH)
     test_feature_matrix = joblib.load(TEST_FEATURE_MATRIX_PATH)
