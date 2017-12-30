@@ -11,11 +11,14 @@ from svm_spam_message.svm_predict import predict as svm_predict
 
 from lr_spam_message.Logistic_Predictor import Logistic_Predictor
 
+from nb_spam_message.model import NBModel
+
 app = Flask(__name__)
 CORS(app)
 
 svm_model = get_trained_svm()
 lr_model = Logistic_Predictor()
+nb_model = NBModel()
 
 def svm_cls(message):
     sms = message
@@ -37,16 +40,27 @@ def lr_cls(message):
 
     return {'prob': prob, 'is_spam': is_spam}
 
+def nb_cls(message):
+    result = nb_model.predict_prob(message)
+    if result[0][0] > result[0][1]:
+        is_spam = 0
+        prob = result[0][0]
+    else:
+        is_spam = 1
+        prob = result[0][1]
+
+    return {'prob': prob, 'is_spam': is_spam}
+
 def cls(message, model):
     if model == '1':
         #调用svm
         return svm_cls(message)
-    if model == '0':
-        # 调用LR
-        return lr_cls(message)
-    if model == '1':
-        return {'prob': 1.0, 'is_spam': 0}
-    return {'prob': prob, 'is_spam': is_spam}
+    if model == '2':
+        # 调用NB
+        return nb_cls(message)
+
+    return lr_cls(message)
+        
 
 @app.route('/api/message', methods = ['POST', 'GET'])
 def message():
