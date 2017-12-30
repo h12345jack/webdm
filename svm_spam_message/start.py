@@ -15,7 +15,7 @@ import svm_train
 import os
 import svm_predict
 
-
+print(os.path.abspath(__file__))
 training_feature_matrix = None
 training_labels = None
 test_feature_matrix = None

@@ -13,8 +13,9 @@ from sklearn.externals import joblib
 from sklearn import metrics
 from sklearn.metrics import precision_recall_fscore_support
 from sklearn import svm
+from file_helper import SVM_MODEL_PATH
 
-def train_svm(feature_matrix, labels, save_model_path='model/svm.pkl'):
+def train_svm(feature_matrix, labels, save_model_path=SVM_MODEL_PATH):
 
     svm_clf = svm.LinearSVC()
     svm_clf.fit(feature_matrix, labels)
@@ -22,7 +23,7 @@ def train_svm(feature_matrix, labels, save_model_path='model/svm.pkl'):
 
     return svm_clf
 
-def get_trained_svm(model_path='model/svm.pkl'):
+def get_trained_svm(model_path=SVM_MODEL_PATH):
     return joblib.load(model_path)
 
 
