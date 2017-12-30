@@ -19,6 +19,9 @@ import jieba
 import jieba.posseg as pseg
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.externals import joblib
+from file_helper import (TRAINING_DATA_PATH, TRAINING_FEATURE_MATRIX_PATH, 
+TRAINING_LABEL_PATH, TEST_FEATURE_MATRIX_PATH, TEST_LABEL_PATH)
+
 
 class TfidfVectorizer(TfidfVectorizer):
     def build_analyzer(self):
@@ -30,7 +33,7 @@ class TfidfVectorizer(TfidfVectorizer):
             return words
         return analyzer
 
-def read_data(path='training_data.txt'):
+def read_data(path=TRAINING_DATA_PATH):
     with open(path) as f:
         data = f.read().split('\n')[:-1] # remove last line
     
@@ -39,8 +42,8 @@ def read_data(path='training_data.txt'):
     return message_data, labels
 
 def transform_feature_space():
-    training_message_data, training_labels = read_data('training_data.txt')
-    test_message_data, test_labels = read_data('test_data.txt')
+    training_message_data, training_labels = read_data(TRAINING_DATA_PATH)
+    test_message_data, test_labels = read_data(TEST_DATA_PATH)
     
     training_len = len(training_message_data)
 
@@ -49,20 +52,20 @@ def transform_feature_space():
     training_feature_matrix = feature_matrix[:training_len]
     test_feature_matrix = feature_matrix[training_len:]
 
-    joblib.dump(tfidf_vz, 'tool/tfidf_vectorizer.pkl')
-    joblib.dump(training_feature_matrix, 'data/training_feature_matrix.pkl')
-    joblib.dump(training_labels, 'data/training_labels.pkl')
-    joblib.dump(test_feature_matrix, 'data/test_feature_matrix.pkl')
-    joblib.dump(test_labels, 'data/test_labels.pkl')
+    joblib.dump(tfidf_vz, TFIDF_VZ_PATH)
+    joblib.dump(training_feature_matrix, TRAINING_FEATURE_MATRIX_PATH) 
+    joblib.dump(training_labels, TRAINING_LABEL_PATH)
+    joblib.dump(test_feature_matrix, TEST_FEATURE_MATRIX_PATH) 
+    joblib.dump(test_labels, TEST_LABEL_PATH)
 
     return training_feature_matrix, training_labels, test_feature_matrix, test_labels
 
 
 def get_feature_space():
-    training_feature_matrix = joblib.load('data/training_feature_matrix.pkl')
-    training_labels = joblib.load('data/training_labels.pkl')
-    test_feature_matrix = joblib.load('data/test_feature_matrix.pkl')
-    test_labels = joblib.load('data/test_labels.pkl')
+    training_feature_matrix = joblib.load(TRAINING_FEATURE_MATRIX_PATH)
+    training_labels = joblib.load(TRAINING_LABEL_PATH)
+    test_feature_matrix = joblib.load(TEST_FEATURE_MATRIX_PATH)
+    test_labels = joblib.load(TEST_LABEL_PATH)
 
     return training_feature_matrix, training_labels, test_feature_matrix, test_labels
 
