@@ -17,6 +17,13 @@ from sklearn.externals import joblib
 from file_helper import TFIDF_VZ_PATH
 
 def predict(clf, sms):
+    """
+    using trainned svm classifier to predict a raw sms/message
+
+    INPUT: svm classifier model, raw message
+    OUTPUT: if raw message is spam message, result is True.
+            else result is False
+    """
     if not os.path.exists(TFIDF_VZ_PATH):
         print('NOT TRAINED, CANNOT PREDICT')
         exit(1)
