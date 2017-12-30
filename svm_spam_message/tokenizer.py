@@ -19,7 +19,7 @@ import jieba
 import jieba.posseg as pseg
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.externals import joblib
-from file_helper import (TRAINING_DATA_PATH, TRAINING_FEATURE_MATRIX_PATH, 
+from file_helper import (TRAINING_DATA_PATH, TEST_DATA_PATH, TRAINING_FEATURE_MATRIX_PATH, 
 TRAINING_LABEL_PATH, TEST_FEATURE_MATRIX_PATH, TEST_LABEL_PATH)
 
 

@@ -10,12 +10,13 @@
 THIS IS THE MAIN POINT FOR APPLICATION
 '''
 
-import tokenizer
-import svm_train
+import sys
 import os
-import svm_predict
 
-print(os.path.abspath(__file__))
+import tokenizer, svm_train, svm_predict
+import time
+
+
 training_feature_matrix = None
 training_labels = None
 test_feature_matrix = None
@@ -44,7 +45,10 @@ else:
     svm_clf = svm_train.get_trained_svm()
 
 print('Begin test svm model for test data ... ')
+start_time = time.time()
 svm_train.test_clf(svm_clf, test_feature_matrix, test_labels) 
+end_time = time.time()
+print('End testing, the predict time for 100000 data is: %lf' % (end_time - start_time))
 
 
 
