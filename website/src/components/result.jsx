@@ -25,7 +25,7 @@ class Results extends React.Component {
 
     render() {
     const { result, classes, message } = this.props;
-    let status = result.is_spam == 0 ? 'exception' : 'success';
+    let status = result.is_spam == 1 ? 'exception' : 'success';
     if(result.prob < 0.7 && result.prob > 0.3){
         status = 'active'
     }
@@ -44,11 +44,11 @@ class Results extends React.Component {
                         status={status}
                     />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={8} sm={6}>
                     <CardContent>
                         <Typography>该短信为</Typography>
                         <Typography type="display1" color="secondary">
-                        {result.is_spam === 0
+                        {result.is_spam === 1
                             ? <span style={{color: 'red'}}> 垃圾短信 </span>
                             : <span style={{color: 'green'}}>正常短信</span>
                             

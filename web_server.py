@@ -17,7 +17,10 @@ svm_model = get_trained_svm()
 def svm_cls(message):
     sms = message
     is_spam = svm_predict(svm_model, sms)
-
+    if is_spam:
+        is_spam = 1
+    else:
+        is_spam = 0
     return {'prob': 1.0, 'is_spam': is_spam}
 
 def cls(message, model):
