@@ -13,7 +13,7 @@ from sklearn.externals import joblib
 from sklearn import metrics
 from sklearn.metrics import precision_recall_fscore_support
 from sklearn import svm
-from file_helper import SVM_MODEL_PATH
+from file_helper import SVM_MODEL_PATH, TFIDF_VZ_PATH
 
 def train_svm(feature_matrix, labels, save_model_path=SVM_MODEL_PATH):
     """
@@ -45,10 +45,13 @@ def test_clf(clf, test_data, test_labels):
     """
     test svm model for test data. report the test result
 
-    INPUT: svm classifier, test feature matrix, test labels
+    INPUT: svm classifier, test raw data, test labels
     OUTPUT: None
     """
-    predict_result = clf.predict(test_data)
+
+    tfidf_vz = joblib.load(TFIDF_VZ_PATH)
+    test_feature_matrix = tfidf_vz.transform(test_data) 
+    predict_result = clf.predict(test_feature_matrix)
     print("Classification report for classifier %s:\n%s\n" % (
         clf, metrics.classification_report(test_labels, predict_result, digits=4)))
     print("Confusion matrix:\n%s" % metrics.confusion_matrix(test_labels, predict_result))
