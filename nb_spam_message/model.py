@@ -10,15 +10,14 @@ import numpy as np
 import pandas as pd
 
 from sklearn.pipeline import Pipeline
-from sklearn.model_selection import KFold
-from sklearn.metrics import f1_score
-from sklearn.feature_extraction.text import TfidfTransformer, CountVectorizer
-from sklearn.base import clone
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.metrics import classification_report
 from sklearn.externals import joblib
-from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import confusion_matrix
+from sklearn.base import clone
+from sklearn.feature_extraction.text import TfidfTransformer, CountVectorizer
+from sklearn.model_selection import GridSearchCV, KFold
+from sklearn.metrics import classification_report,confusion_matrix
+from sklearn.metrics import f1_score
+from sklearn.naive_bayes import MultinomialNB
+
 
 CUR_DIR = os.path.abspath(os.path.dirname(__file__))
 
