@@ -19,8 +19,7 @@ import jieba
 import jieba.posseg as pseg
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.externals import joblib
-from file_helper import (TRAINING_DATA_PATH, TEST_DATA_PATH, TRAINING_FEATURE_MATRIX_PATH, 
-TRAINING_LABEL_PATH, TEST_FEATURE_MATRIX_PATH, TEST_LABEL_PATH)
+from file_helper import  *
 
 
 class TfidfVectorizer(TfidfVectorizer):
@@ -53,31 +52,36 @@ def read_data(path=TRAINING_DATA_PATH):
     message_data = list(map(lambda x: x.split('\t')[1].strip(), data))
     return message_data, labels
 
-def transform_feature_space():
+def fit_transform_training_feature_space():
     """
-    transform all training data and test data to tf-idf feature matrix
+    transform all training data tf-idf feature matrix
 
     INPUT: None
     OUTPUT: training feature matrix, training labels
-            test feature matrix, test labels
     """
     training_message_data, training_labels = read_data(TRAINING_DATA_PATH)
-    test_message_data, test_labels = read_data(TEST_DATA_PATH)
     
-    training_len = len(training_message_data)
-
     tfidf_vz = TfidfVectorizer(min_df=2, max_df=0.8)
-    feature_matrix = tfidf_vz.fit_transform(training_message_data + test_message_data)
-    training_feature_matrix = feature_matrix[:training_len]
-    test_feature_matrix = feature_matrix[training_len:]
+    training_feature_matrix = tfidf_vz.fit_transform(training_message_data)
 
     joblib.dump(tfidf_vz, TFIDF_VZ_PATH)
     joblib.dump(training_feature_matrix, TRAINING_FEATURE_MATRIX_PATH) 
     joblib.dump(training_labels, TRAINING_LABEL_PATH)
+
+    return training_feature_matrix, training_labels
+
+
+def transform_test_feature_space():
+    test_message_data, test_labels = read_data(TEST_DATA_PATH)
+    
+    tfidf_vz = joblib.load(TFIDF_VZ_PATH)
+    test_feature_matrix = tfidf_vz.transform(test_message_data)
+
     joblib.dump(test_feature_matrix, TEST_FEATURE_MATRIX_PATH) 
     joblib.dump(test_labels, TEST_LABEL_PATH)
 
-    return training_feature_matrix, training_labels, test_feature_matrix, test_labels
+    return test_feature_matrix, test_labels
+
 
 
 def get_feature_space():
@@ -87,12 +91,9 @@ def get_feature_space():
 
     INPUT: None
     OUTPUT: training feature matrix, training labels
-            test feature matrix, test labels
     """
     training_feature_matrix = joblib.load(TRAINING_FEATURE_MATRIX_PATH)
     training_labels = joblib.load(TRAINING_LABEL_PATH)
-    test_feature_matrix = joblib.load(TEST_FEATURE_MATRIX_PATH)
-    test_labels = joblib.load(TEST_LABEL_PATH)
 
-    return training_feature_matrix, training_labels, test_feature_matrix, test_labels
+    return training_feature_matrix, training_labels
 
