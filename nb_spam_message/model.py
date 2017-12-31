@@ -30,19 +30,11 @@ TRAIN_DATA_CUT = os.path.join(CUR_DIR, './data/training_data_wc.txt')
 TF_IDF_MODEL = os.path.join(CUR_DIR, './model/tf_idf.pkl')
 NB_MODEL = os.path.join(CUR_DIR, './model/nb_model.pkl')
 
-def read_train():
-    train_data = []
-    with open(TRAIN_DATA, encoding='utf8') as f:
-        for line in f.readlines():
-            line = line.strip()
-            label_and_data = line.split('\t')
-            if len(label_and_data) == 2:
-                label, data = label_and_data
-                train_data.append((data, int(label)))
-    return train_data
-
 
 def load_data(data_path):
+    '''
+    数据读取
+    '''
     datas = []
     with open(data_path, encoding='utf8') as f:
         l_num = 0
@@ -61,7 +53,8 @@ def load_data(data_path):
 
 def train_test(train_data):
     '''
-    tf_idf的特征, naive bayes
+    tf_idf的特征, naive bayes，
+    第一次测试，无调参，最简单的模型
     '''  
     data = [i[0] for i in train_data]
     label = [i[1] for i in train_data]
@@ -69,7 +62,6 @@ def train_test(train_data):
         ('vect', CountVectorizer(min_df=1, ngram_range=(1,1),decode_error = 'ignore', analyzer='char')),
         ('tfidf', TfidfTransformer())
     ])
-
 
     text_fea = pipline.fit_transform(data)
     print(text_fea.shape)
@@ -93,6 +85,17 @@ def train_test(train_data):
         print(classification_report(y_test_folders, y_pred, digits=5))
 
 def alchemist_train(train_data, test_data):
+    '''
+    炼金与调参
+    vect的参数:
+    ngram_range: unigrams or bigrams ,trigram is bad
+    tfidf的参数:
+    use_idf: 是否使用idf
+    norm: 范式
+    sublinear_tf: 是否使用1 + log(tf)
+    cls的参数:
+    alpha：(Laplace/Lidstone) smoothing parameter 拉普拉斯平滑参数的alpha
+    '''
     data = [i[0] for i in train_data]
     label = [i[1] for i in train_data]
     pipeline = Pipeline([
@@ -106,17 +109,10 @@ def alchemist_train(train_data, test_data):
         'tfidf__use_idf': (True, False),
         'tfidf__norm': ('l1','l2'),
         'tfidf__sublinear_tf': (True, False),
-        'cls__alpha': [i/10 for i in range(2, 11, 2)]
+        'cls__alpha': [i/10 for i in range(2, 11, 1)]
     }
-    # X_test = [i[0] for i in test_data]
-    # y_test = [i[1] for i in test_data] 
-    # pipeline.fit(data, label)
-    # y_pred = pipeline.predict(X_test)
-    # t2 = time.time()
-    # print("f1:score", f1_score(y_test, y_pred, average='binary'))
-    # print(classification_report(y_test, y_pred))
-    # print(confusion_matrix(y_test, y_pred))
-    grid_search = GridSearchCV(pipeline, nb_param_grid, cv=2, scoring="f1", n_jobs=4, verbose=3)
+   
+    grid_search = GridSearchCV(pipeline, nb_param_grid, cv=2, scoring="f1", n_jobs=4, verbose=1)
     print("Performing grid search...")
     print("pipeline:", [name for name, _ in pipeline.steps])
     print("parameters:")
@@ -124,8 +120,6 @@ def alchemist_train(train_data, test_data):
     t0 = time.time()
     grid_search.fit(data, label)
     print("done in %0.3fs" % (time.time() - t0))
-    print()
-
     print("Best score: %0.3f" % grid_search.best_score_)
     print("Best parameters set:")
     best_parameters = grid_search.best_estimator_.get_params()
@@ -138,7 +132,18 @@ def alchemist_train(train_data, test_data):
 
 def train(train_data, test_data):
     '''
-    tf_idf的特征, naive bayes
+    训练模型与评测
+    调参得到最好的参数是：
+    Best score: 0.984
+    Best parameters set:
+        cls__alpha: 0.6
+        tfidf__norm: 'l2'
+        tfidf__sublinear_tf: True
+        tfidf__use_idf: True
+        vect__max_df: 0.5
+        vect__ngram_range: (1, 2)
+
+    应用改模型，将模型持久化，并重新加载完成测试
     '''  
     data = [i[0] for i in train_data]
     label = [i[1] for i in train_data]
@@ -154,7 +159,7 @@ def train(train_data, test_data):
     clf.fit(text_fea, label)
     joblib.dump(clf, NB_MODEL)
 
-
+    # 测试在测试集上的表现
     p = joblib.load(TF_IDF_MODEL)
     clf2 = joblib.load(NB_MODEL)
     X_test = [i[0] for i in test_data]
@@ -171,6 +176,9 @@ def train(train_data, test_data):
 
 
 class NBModel():
+    '''
+    简单封装，以供调用
+    '''
     def __init__(self):
         self.p = joblib.load(TF_IDF_MODEL)
         self.clf = joblib.load(NB_MODEL)
