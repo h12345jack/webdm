@@ -20,7 +20,6 @@ class NBmodel:
     def __init__(self, alpha=1):
         self.alpha = alpha
 
-
         self.prob_c = {}
         self.prob_x_c = {}
         self.categorys = []
@@ -135,15 +134,20 @@ def sentence2gram(sentence, ngram_range = (1, 1), analyzer = 'char'):
 
 def test1():
     '''
-    http://ana.cachopo.org/datasets-for-single-label-text-categorization
-    测试函数,测试的数据集为Reuters-21578 R8， 5485 docs
-    kNN (k = 10) 0.8524
-    Naive Bayes  0.9607   
-    Centroid (Normalized Sum) 0.9356
-    SVM (Linear Kernel) 0.9698
+    =================================================================
+
+    [数据相关](http://ana.cachopo.org/datasets-for-single-label-text-categorization)
+    测试的数据集：Reuters-21578 R8， 5485 docs
+    =================================================================
+
+    | kNN (k = 10) | 0.8524 |
+    | Naive Bayes |  0.9607 |   
+    | Centroid (Normalized Sum) | 0.9356 |
+    | SVM (Linear Kernel) | 0.9698 |
     
     我的结果:
-    total:  2189 right:  2099 precision: 0.9588853357697579
+    total:  2189 right:  2099 accuracy: 0.9588853357697579
+    =================================================================
 
     '''
     nb_model = NBmodel(alpha=1.0)
@@ -178,13 +182,14 @@ def test1():
             right += 1
 
     print("total: ", len(test_list), "right: ",
-          right, 'precision:', right / len(test_list))
+          right, 'accuracy:', right / len(test_list))
 
 
 def test2():
     '''
-    2 category
-    total:  99999 right:  99335 precision: 0.9933599335993359
+    =================================================================
+    使用diy，不做tf-idf
+    total:  99999 right:  99335 accuracy: 0.9933599335993359
                  precision    recall  f1-score   support
 
               0    0.99656   0.99605   0.99631     89917
@@ -194,7 +199,29 @@ def test2():
 
     [[89562   355]
      [  309  9773]]
+    =================================================================
+    非diy，调用sklearn库
+    参数：
+        cls__alpha: 0.6
+        tfidf__norm: 'l2'
+        tfidf__sublinear_tf: True
+        tfidf__use_idf: True
+        vect__max_df: 0.5
+        vect__ngram_range: (1, 2)
 
+    total:  99999 right:  99661 accuracy: 0.9966199662
+    f1:score 0.983237452886
+    total: 
+             precision    recall  f1-score   support
+
+          0    0.99812   0.99812   0.99812     89917
+          1    0.98324   0.98324   0.98324     10082
+
+    avg / total    0.99662   0.99662   0.99662     99999
+
+    [[89748   169]
+     [  169  9913]]
+    =================================================================
 
     '''
     from sklearn.metrics import classification_report,confusion_matrix
@@ -224,7 +251,7 @@ def test2():
             right += 1
 
     print("total: ", len(test_data), "right: ",
-          right, 'precision:', right / len(test_data))
+          right, 'accuracy:', right / len(test_data))
 
     print(classification_report(y_test, y_pred, digits=5))
     print(confusion_matrix(y_test, y_pred))

@@ -167,6 +167,8 @@ def train(train_data, test_data):
     X_fea = p.transform(X_test)
     y_pred = clf2.predict(X_fea)
     t2 = time.time()
+    print("total: ", len(y_pred), "right: ",
+          sum(y_pred==y_test), 'accuracy:', sum(y_pred==y_test) / len(y_pred))
     print("f1:score", f1_score(y_test, y_pred, average='binary'))
     print(classification_report(y_test, y_pred, digits=5))
     print(confusion_matrix(y_test, y_pred))
