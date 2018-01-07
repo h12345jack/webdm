@@ -57,7 +57,7 @@ def train_test(train_data):
     data = [i[0] for i in train_data]
     label = [i[1] for i in train_data]
     pipline = Pipeline([
-        ('vect', CountVectorizer(min_df=1, ngram_range=(1,1),decode_error = 'ignore', analyzer='char')),
+        ('vect', CountVectorizer(min_df=1, ngram_range=(1,1), decode_error = 'ignore', analyzer='char')),
         ('tfidf', TfidfTransformer())
     ])
 
