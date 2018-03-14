@@ -2,6 +2,7 @@
 import time
 
 from flask import Flask
+from flask import render_template
 from flask import jsonify
 from flask_cors import CORS
 from flask import request
@@ -13,7 +14,7 @@ from lr_spam_message.Logistic_Predictor import Logistic_Predictor
 
 from nb_spam_message.model import NBModel
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder = 'website/build', static_folder='website/build/static') 
 CORS(app)
 
 svm_model = get_trained_svm()
@@ -72,5 +73,8 @@ def message():
         model = req.get('model', '1')
         return jsonify(cls(message, model))
 
+@app.route('/', methods=['GET'])
+def index():
+    return render_template("index.html")
 if __name__ == '__main__':
     app.run(debug=True)
