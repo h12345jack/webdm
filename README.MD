@@ -1,4 +1,4 @@
-## 网络数据挖掘小组作业
+# 网络数据挖掘小组作业
 
 
 ## Project Instruction
@@ -40,7 +40,6 @@ python web_server.py
 cd website/
 npm run start
 ```
-http://127.0.0.1:3000
 
 ### Build
 
