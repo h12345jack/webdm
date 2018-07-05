@@ -40,7 +40,6 @@ python web_server.py
 cd website/
 npm run start
 ```
-
 http://127.0.0.1:3000
 
 ### Build
@@ -50,14 +49,10 @@ http://127.0.0.1:3000
 ```
 python tornado_server.py
 ```
+Open [http://127.0.0.1:5000](http://127.0.0.1:5000)
 
-#### Frontend
 
-```
-npm run build
-```
-
-### [Demo](http://webdm.h12345jack.tk/) 
+### Demo
 
 ![](./image/sp171231_120051.png)
 ![](./image/sp171231_120129.png)

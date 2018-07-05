@@ -39,7 +39,9 @@ const styles = theme => ({
         width: '100%'
     },
     media: {
-        height: 200,
+        width:'80%',
+        marginLeft: '10%',
+        height: 300,
     },
   });
 
@@ -129,7 +131,7 @@ class Intro extends React.Component {
                     image={ResultImg}
                     title="Contemplative Reptile"
                 />
-                <CardContent>
+                <CardContent style={{textAlign:'center'}}>
  
                 <Typography component="p" className={classes.comment}>
                     其中NB使用n-gram（未分词），而LR和SVM使用Jieba分词
